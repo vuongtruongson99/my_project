@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vuongtruongson99/ocr_project/controllers"
 	"github.com/vuongtruongson99/ocr_project/initializers"
+	"github.com/vuongtruongson99/ocr_project/models"
 	"github.com/vuongtruongson99/ocr_project/routes"
 )
 
@@ -55,6 +57,8 @@ func main() {
 	if err != nil {
 		log.Fatal("? Could not load environment variables", err)
 	}
+	initializers.DB.AutoMigrate(&models.User{})
+	fmt.Println("? Migration complete")
 
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{"http://localhost:8000", config.ClientOrigin}
@@ -73,32 +77,3 @@ func main() {
 
 	log.Fatal(server.Run(":" + config.ServerPort))
 }
-
-// func main() {
-// 	router := gin.Default()
-
-// 	// Serving nhanh hơn
-// 	router.LoadHTMLGlob("templates/template/*")
-// 	// Serve static files
-// 	router.Static("static/", "./templates/static")
-
-// 	router.GET("/", showIndexPage)
-// 	router.GET("/text-to-image", showTTIPage)
-
-// 	router.Run(":8080")
-// }
-
-// 	// render(c, gin.H{
-// 	// 	"title":   "Home Page",
-// 	// 	"payload": articles}, "index.html")
-// }
-
-// func showTTIPage(c *gin.Context) {
-// 	c.HTML(
-// 		http.StatusOK,
-// 		"tti.html",
-// 		gin.H{
-// 			"title": "Text-to-image",
-// 		},
-// 	)
-// }

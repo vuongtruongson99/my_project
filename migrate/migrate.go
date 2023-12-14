@@ -1,11 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/vuongtruongson99/ocr_project/initializers"
-	"github.com/vuongtruongson99/ocr_project/models"
 )
 
 func init() {
@@ -17,7 +15,7 @@ func init() {
 	initializers.ConnectDB(&config)
 }
 
-func main() {
-	initializers.DB.AutoMigrate(&models.User{})
-	fmt.Println("? Migration complete")
-}
+// func main() {
+// 	initializers.DB.AutoMigrate(&models.User{})
+// 	fmt.Println("? Migration complete")
+// }
