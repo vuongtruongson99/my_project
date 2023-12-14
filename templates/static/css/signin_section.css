@@ -1,0 +1,31 @@
+.gradient-custom-3 {
+    /* fallback for old browsers */
+    /* background: #84fab0;
+    
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+.gradient-custom-4 {
+    /* fallback for old browsers */
+    background: #1ba7a7;
+    box-shadow: 0px 4px 16px rgba(0,0,0,0.1);
+    background: #1ba7a7;
+    border-radius: 100px;
+    padding: 17px 38px;
+    color: white!important;
+}
+/* 
+.section-2 {
+    padding-top: 100px;
+} */
+
+.section-3 {
+    background-image: url(../images/Background4.jpg);
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+    transition: all 500ms;
+    padding-top: 100px;
+    overflow: auto;
+    color: #4A4A4A;
+}

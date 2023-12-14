@@ -21,16 +21,15 @@ type User struct {
 }
 
 type SignUpInput struct {
-	Name            string `json:"name" binding:"required"`
-	Email           string `json:"email" binding:"required"`
-	Password        string `json:"password" binding:"required,min=8"`
-	PasswordConfirm string `json:"passwordConfirm" binding:"required"`
-	Photo           string `json:"photo" binding:"required"`
+	Name            string `form:"name" binding:"required"`
+	Email           string `form:"email" binding:"required"`
+	Password        string `form:"password" binding:"required,min=8"`
+	PasswordConfirm string `form:"passwordConfirm" binding:"required"`
 }
 
 type SignInInput struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Email    string `form:"email" binding:"required"`
+	Password string `form:"password" binding:"required"`
 }
 
 type UserResponse struct {
@@ -42,4 +41,9 @@ type UserResponse struct {
 	Provider  string    `json:"provider"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type GenerateImage struct {
+	Model  string `form:"selectModel" binding:"required"`
+	Prompt string `form:"prompt" binding:"required"`
 }

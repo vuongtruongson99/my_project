@@ -12,13 +12,23 @@ import (
 )
 
 var (
-	server              *gin.Engine
-	AuthController      controllers.AuthController
-	AuthRouteController routes.AuthRouteController
+	server         *gin.Engine
+	AuthController controllers.AuthController
+	UserController controllers.UserController
 
-	UserController      controllers.UserController
+	AuthRouteController routes.AuthRouteController
 	UserRouteController routes.UserRouteController
 )
+
+func showIndexPage(c *gin.Context) {
+	c.HTML(
+		http.StatusOK,
+		"home.html",
+		gin.H{
+			"title": "Home Page",
+		},
+	)
+}
 
 func init() {
 	config, err := initializers.LoadConfig(".")
@@ -28,12 +38,16 @@ func init() {
 
 	initializers.ConnectDB(&config)
 	AuthController = controllers.NewAuthController(initializers.DB)
-	AuthRouteController = routes.NewAuthRouteController(AuthController)
-
 	UserController = controllers.NewUserController(initializers.DB)
+
+	AuthRouteController = routes.NewAuthRouteController(AuthController)
 	UserRouteController = routes.NewRouteUserController(UserController)
 
 	server = gin.Default()
+	server.LoadHTMLGlob("templates/template/*")
+	server.Static("static/", "./templates/static")
+
+	server.GET("/", showIndexPage)
 }
 
 func main() {
@@ -59,3 +73,32 @@ func main() {
 
 	log.Fatal(server.Run(":" + config.ServerPort))
 }
+
+// func main() {
+// 	router := gin.Default()
+
+// 	// Serving nhanh hơn
+// 	router.LoadHTMLGlob("templates/template/*")
+// 	// Serve static files
+// 	router.Static("static/", "./templates/static")
+
+// 	router.GET("/", showIndexPage)
+// 	router.GET("/text-to-image", showTTIPage)
+
+// 	router.Run(":8080")
+// }
+
+// 	// render(c, gin.H{
+// 	// 	"title":   "Home Page",
+// 	// 	"payload": articles}, "index.html")
+// }
+
+// func showTTIPage(c *gin.Context) {
+// 	c.HTML(
+// 		http.StatusOK,
+// 		"tti.html",
+// 		gin.H{
+// 			"title": "Text-to-image",
+// 		},
+// 	)
+// }

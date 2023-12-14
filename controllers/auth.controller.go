@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"strings"
@@ -21,19 +22,46 @@ func NewAuthController(DB *gorm.DB) AuthController {
 	return AuthController{DB}
 }
 
+// Show form SignUp
+func (ac *AuthController) ShowSignUp(c *gin.Context) {
+	c.HTML(
+		http.StatusOK,
+		"signup.html",
+		gin.H{},
+	)
+}
+
+// Show SignIn form
+func (ac *AuthController) ShowSignIn(c *gin.Context) {
+	c.HTML(
+		http.StatusOK,
+		"signin.html",
+		gin.H{},
+	)
+}
+
+// Show Text-to-Image form
+func (ac *AuthController) ShowMainTTI(c *gin.Context) {
+	c.HTML(
+		http.StatusOK,
+		"tti.html",
+		gin.H{},
+	)
+}
+
 // SignUp User
 func (ac *AuthController) SignUpUser(c *gin.Context) {
 	var payload *models.SignUpInput
 
-	if err := c.ShouldBindJSON(&payload); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+	if err := c.Bind(&payload); err != nil {
+		c.HTML(http.StatusBadRequest, "signup.html", gin.H{
 			"status":  "fail",
 			"message": err.Error(),
 		})
 	}
 
 	if payload.Password != payload.PasswordConfirm {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.HTML(http.StatusBadRequest, "signup.html", gin.H{
 			"status":  "fail",
 			"message": "Passwords do not match",
 		})
@@ -41,7 +69,7 @@ func (ac *AuthController) SignUpUser(c *gin.Context) {
 
 	hashedPassword, err := utils.HashPassword(payload.Password)
 	if err != nil {
-		c.JSON(http.StatusBadGateway, gin.H{
+		c.HTML(http.StatusBadGateway, "signup.html", gin.H{
 			"status":  "error",
 			"message": err.Error(),
 		})
@@ -54,7 +82,6 @@ func (ac *AuthController) SignUpUser(c *gin.Context) {
 		Password:  hashedPassword,
 		Role:      "user",
 		Verified:  true,
-		Photo:     payload.Photo,
 		Provider:  "local",
 		CreatedAt: now,
 		UpdatedAt: now,
@@ -63,42 +90,30 @@ func (ac *AuthController) SignUpUser(c *gin.Context) {
 	result := ac.DB.Create(&newUsers)
 
 	if result.Error != nil && strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
-		c.JSON(http.StatusConflict, gin.H{
+		c.HTML(http.StatusConflict, "signup.html", gin.H{
 			"status":  "fail",
 			"message": "User with that email already exists",
 		})
 		return
 	} else if result.Error != nil {
-		c.JSON(http.StatusBadGateway, gin.H{
+		c.HTML(http.StatusBadGateway, "signup.html", gin.H{
 			"status":  "error",
 			"message": "Something bad happened",
 		})
 		return
 	}
 
-	userResponse := &models.UserResponse{
-		ID:        newUsers.ID,
-		Name:      newUsers.Name,
-		Email:     newUsers.Email,
-		Role:      newUsers.Role,
-		Photo:     newUsers.Photo,
-		Provider:  newUsers.Provider,
-		CreatedAt: newUsers.CreatedAt,
-		UpdatedAt: newUsers.UpdatedAt,
-	}
-
-	c.JSON(http.StatusCreated, gin.H{
-		"status": "success",
-		"data":   gin.H{"user": userResponse}})
+	c.HTML(http.StatusCreated, "signup.html", gin.H{
+		"status":  "success",
+		"message": "Successful created!"})
 }
 
 // Login User
 func (ac *AuthController) SignInUser(c *gin.Context) {
 	var payload *models.SignInInput
-	fmt.Println(payload)
 
-	if err := c.ShouldBindJSON(&payload); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+	if err := c.Bind(&payload); err != nil {
+		c.HTML(http.StatusBadRequest, "signin.html", gin.H{
 			"status":  "fail",
 			"message": err.Error(),
 		})
@@ -110,7 +125,7 @@ func (ac *AuthController) SignInUser(c *gin.Context) {
 
 	// Check email
 	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.HTML(http.StatusBadRequest, "signin.html", gin.H{
 			"status":  "fail",
 			"message": "Invalid email or password",
 		})
@@ -119,7 +134,7 @@ func (ac *AuthController) SignInUser(c *gin.Context) {
 
 	// Check password
 	if err := utils.VerifyPassword(user.Password, payload.Password); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.HTML(http.StatusBadRequest, "signin.html", gin.H{
 			"status":  "fail",
 			"message": "Invalid email or password",
 		})
@@ -131,7 +146,7 @@ func (ac *AuthController) SignInUser(c *gin.Context) {
 	// Generate Token
 	access_token, err := utils.CreateToken(config.AccessTokenExpiresIn, user.ID, config.AccessTokenPrivateKey)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.HTML(http.StatusBadRequest, "signin.html", gin.H{
 			"status":  "fail",
 			"message": err.Error(),
 		})
@@ -140,7 +155,7 @@ func (ac *AuthController) SignInUser(c *gin.Context) {
 
 	refresh_token, err := utils.CreateToken(config.RefreshTokenExpiresIn, user.ID, config.RefreshTokenPrivateKey)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.HTML(http.StatusBadRequest, "signin.html", gin.H{
 			"status":  "fail",
 			"message": err.Error(),
 		})
@@ -151,10 +166,7 @@ func (ac *AuthController) SignInUser(c *gin.Context) {
 	c.SetCookie("refresh_token", refresh_token, config.RefreshTokenMaxAge*60, "/", "localhost", false, true)
 	c.SetCookie("logged_in", "true", config.AccessTokenMaxAge*60, "/", "localhost", false, false)
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":       "success",
-		"access_token": access_token,
-	})
+	c.Redirect(http.StatusFound, "/api/auth/text-to-image")
 }
 
 // Refresh access token
@@ -209,7 +221,42 @@ func (ac *AuthController) LogoutUser(c *gin.Context) {
 	c.SetCookie("refresh_token", "", -1, "/", "localhost", false, true)
 	c.SetCookie("logged_id", "", -1, "/", "localhost", false, false)
 
-	c.JSON(http.StatusOK, gin.H{
+	c.HTML(http.StatusOK, "home.html", gin.H{
 		"status": "success",
 	})
+}
+
+// Send request to HF Inference API
+func (ac *AuthController) RequestImage(c *gin.Context) {
+	var payload *models.GenerateImage
+
+	if err := c.Bind(&payload); err != nil {
+		c.HTML(http.StatusBadRequest, "tti.html", gin.H{
+			"status":  "fail",
+			"message": err.Error(),
+		})
+	}
+
+	config, _ := initializers.LoadConfig(".")
+	APIURL := "https://api-inference.huggingface.co/models/" + payload.Model
+
+	var images []string
+	imageBytes, err := utils.Query(map[string]interface{}{
+		"inputs": payload.Prompt,
+	}, APIURL, config.HFAPIToken)
+
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	img2 := base64.StdEncoding.EncodeToString(imageBytes)
+	images = append(images, img2)
+
+	// os.WriteFile("output/out.png", imageBytes, 0666)
+
+	c.HTML(http.StatusOK, "tti.html", gin.H{
+		"images": images,
+	})
+
 }

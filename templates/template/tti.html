@@ -1,0 +1,61 @@
+{{ template "top" .}}
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/navbar.css">
+<link rel="stylesheet" href="/static/css/tti_section.css">
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.4-rc1/css/foundation.css'>
+
+<div class="section-3 vh-100">
+    <div class="container h-100">
+        <div class="row">
+            <div class="col-12 text-center">
+              {{if eq .status "fail" }}
+              <div class="alert alert-danger" role="alert">
+                {{ .message }}
+              </div>
+              {{end}}
+            </div>
+            
+        </div>
+
+        <div class="row video">
+            <div class="col-lg-8 col-sm-8 mx-auto mb-5">
+                 <div class="form-container" id="myForm">
+                  <h1><span>Select model</span> and <span>your prompt</span> to generate an image</h1>
+                  <form action="/api/auth/text-to-image" method="post">
+                    <select name="selectModel">
+                      <option value="" disabled selected>Choose your model</option>
+                      <option value="playgroundai/playground-v2-1024px-aesthetic">playgroundai/playground-v2-1024px-aesthetic</option>
+                      <option value="runwayml/stable-diffusion-v1-5">runwayml/stable-diffusion-v1-5</option>
+                      <option value="segmind/Segmind-Vega">segmind/Segmind-Vega</option>
+                    </select>
+                    <input type="text" name="prompt" placeholder="Your prompt...">
+                    <button type="submit">Submit</button>
+                  </form>
+                </div>    
+            </div>
+            
+
+            {{range .images}}
+            <div class="col-lg-8 col-sm-8 mx-auto mb-5">
+              <div class="genImg">
+                <img src="data:image/png;base64,{{.}}" class="img-fluid image-dashboard" />
+              </div>
+            </div>
+            {{end}}
+      
+
+        </div>        
+    </div>
+</div>
+
+<!-- <script>
+  document.getElementById("form-container").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Your form processing logic goes here
+
+    // Hide the form after submission
+    document.getElementById("myForm").style.display = "none";
+  });
+</script> -->
+{{ template "bottom" . }}

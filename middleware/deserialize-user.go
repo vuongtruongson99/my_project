@@ -26,7 +26,8 @@ func DeserializeUser() gin.HandlerFunc {
 		}
 
 		if access_token == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": "You are not logged in"})
+			c.HTML(http.StatusUnauthorized, "home.html", gin.H{"status": "fail", "message": "You are not logged in"})
+			c.Abort()
 			return
 		}
 
@@ -34,14 +35,16 @@ func DeserializeUser() gin.HandlerFunc {
 		sub, err := utils.ValidateToken(access_token, config.AccessTokenPublicKey)
 
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": err.Error()})
+			c.HTML(http.StatusUnauthorized, "home.html", gin.H{"status": "fail", "message": err.Error()})
+			c.Abort()
 			return
 		}
 
 		var user models.User
 		result := initializers.DB.First(&user, "id = ?", fmt.Sprint(sub))
 		if result.Error != nil {
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "fail", "message": "the user belonging to this token no logger exists"})
+			c.HTML(http.StatusForbidden, "home.html", gin.H{"status": "fail", "message": "the user belonging to this token no logger exists"})
+			c.Abort()
 			return
 		}
 

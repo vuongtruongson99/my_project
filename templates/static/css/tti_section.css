@@ -1,0 +1,84 @@
+.section-3 {
+    background-image: url(../images/Background4.jpg);
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+    transition: all 500ms;
+    padding-top: 75px;
+    /* box-sizing: content-box; */
+    overflow: auto;
+}
+
+.section-3 h3 {
+    font-weight: 500;
+    font-size: 45px;
+    color: var(--font);
+}
+
+.genImg {
+  background: white;
+  padding: 20px;
+  text-align: center;
+  margin-top: 40px;
+  border-radius: 20px;
+}
+
+h1 {
+    margin-top: 3vh;
+    margin-bottom: 3vh;
+    font-size: 2.5rem;
+    /* max-width: 500px; */
+    letter-spacing: 3px;
+    text-align: center;
+    line-height: 1.5;
+    text-transform: capitalize;
+    font-weight: 800;
+    /* color: white; */
+  
+  }
+  
+  .form-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    margin-top: 40px;
+  }
+  
+  .form-container select,
+  .form-container input,
+  .form-container button {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    height: 50px;
+  }
+  
+    /* .form-container select {
+      background-color: #1ba7a7;
+      color: #fff;
+    } */
+  
+    .form-container input,
+    .form-container button {
+      height: 50px;
+      cursor: pointer;
+    }
+  
+    .form-container input::placeholder {
+      color: #ccc;
+    }
+  
+    .form-container button {
+      background-color: #1ba7a7;
+      color: white;
+      padding: 17px 38px;
+    }
+    .form-container button:hover {
+      background-color: #158383;
+    }
+

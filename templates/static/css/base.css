@@ -1,0 +1,27 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --body: white;
+    --btn: rgba(119, 87, 241, 0.2);
+    --font: white;
+    --main-btn: white;
+    --bg-section: #2f2f2fc4;
+    --bg-progress: #DBEAFF;
+    --bg-card-odd: #ffffff63;
+    --bg-card-even: #a79ae0a8;
+    --bg-mail-odd: rgba(38, 35, 92, 0.65);
+    --bg-mail-even: #221F81;
+    --icon-odd: #26235C;
+    --icon-even: #FFFF;
+
+}
+
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    color: var(--body)
+}

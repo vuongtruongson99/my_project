@@ -1,0 +1,38 @@
+{{ template "top" . }}
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/navbar.css">
+<link rel="stylesheet" href="/static/css/1st_section.css">
+
+<div class="section-1 vh-100">
+    <div class="container-fluid h-100 px-5">
+        {{if eq .status "fail" }}
+            <div class="alert alert-danger" role="alert">
+              {{ .message }}
+            </div>
+        {{end}}
+  
+        {{if eq .status "success" }}
+            <div class="alert alert-success" role="alert">
+              {{ .message }}
+            </div>
+        {{end}}
+        <div class="row align-items-center h-100">
+            <div class="col-lg-5 left">
+                <h1 class="display-4">Stable Diffusion Online!</h1>
+                <p>Stable Diffusion XL is a latent text-to-image diffusion model capable of generating photo-realistic images given any text input, 
+                    cultivates autonomous freedom to produce incredible imagery, empowers billions of people to create stunning art within seconds.</p>
+                
+                <div class="buttons">
+                    <a href="/api/auth/text-to-image" class="main-btn">Let's go</a>
+                </div>
+            
+            </div>
+            <div class="col-lg-7 align-self-end">
+                <!-- <img class="right-main img-fluid" src="static/images/Background4.jpg" alt=""> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="static/js/1st.js"></script>
+{{ template "bottom" . }}

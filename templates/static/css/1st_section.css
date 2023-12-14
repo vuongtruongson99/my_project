@@ -1,0 +1,74 @@
+.section-1 {
+    background-image: url(../images/Background4.jpg);
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+    transition: all 500ms;
+    padding-top: 100px;
+    overflow: auto;
+}
+
+.section-1 .left h1 {
+    font-weight: 700;
+    font-size: 69px;
+    line-height: 70px;
+    color: var(--font);
+    margin-bottom: 20px;
+}
+
+.section-1 .left p {
+    font-weight: 500;
+    font-size: 23px;
+    line-height: 130%;
+    /* or 31px */
+    color: var(--font);
+}
+
+.section-1 .buttons a {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 28px;
+    text-decoration: none;
+    line-height: 130%;
+    color: #FFFFFF;
+}
+
+.section-1 .buttons a.main-btn {
+    color: #055E62;
+    background: var(--main-btn);
+    /* box-shadow: var(--box-shadow); */
+    border-radius: 100px;
+    padding: 20px 100px;
+    display: inline-block;
+    margin-top: 24px;
+    background-blend-mode: overlay;
+    position: relative;
+}
+
+.section-1 .buttons a.main-btn:hover {
+    background: #d2e5e5
+}
+
+.section-1 .buttons a.main-btn.dark::before {
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    border-radius:50px; 
+    padding: 3px;
+    
+    background:linear-gradient(106.21deg, #FE53BB 33.92%, #09FBD3 65.33%);
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude; 
+}
+
+.section-1 .right-main {
+    width: 100%;
+    height: auto;
+    bottom: 0px
+}
