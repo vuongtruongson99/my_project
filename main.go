@@ -17,9 +17,11 @@ var (
 	server         *gin.Engine
 	AuthController controllers.AuthController
 	UserController controllers.UserController
+	PostController controllers.PostController
 
 	AuthRouteController routes.AuthRouteController
 	UserRouteController routes.UserRouteController
+	PostRouteController routes.PostRouteController
 )
 
 func showIndexPage(c *gin.Context) {
@@ -41,9 +43,11 @@ func init() {
 	initializers.ConnectDB(&config)
 	AuthController = controllers.NewAuthController(initializers.DB)
 	UserController = controllers.NewUserController(initializers.DB)
+	PostController = controllers.NewPostController(initializers.DB)
 
 	AuthRouteController = routes.NewAuthRouteController(AuthController)
 	UserRouteController = routes.NewRouteUserController(UserController)
+	PostRouteController = routes.NewRoutePostController(PostController)
 
 	server = gin.Default()
 	server.LoadHTMLGlob("templates/template/*")
@@ -74,6 +78,7 @@ func main() {
 
 	AuthRouteController.AuthRoute(router)
 	UserRouteController.UserRoute(router)
+	PostRouteController.PostRoute(router)
 
 	log.Fatal(server.Run(":" + config.ServerPort))
 }
