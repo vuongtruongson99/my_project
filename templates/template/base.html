@@ -16,6 +16,32 @@
     
 </head>
 <body>
+{{ end }}
+
+{{ define "nav_bar_unauthen" }}
+    <nav class="navbar navbar-nav fixed-top navbar-expand-lg py-0" id="navbar">
+        <div class="container-fluid px-5">
+            <a class="navbar-brand" href="/">
+                <img class="logo" style="width: 80px;" src="/static/images/osos.svg" alt="">
+                VBDI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ms-auto d-flex align-items-center">
+                    <a class="nav-link" href="/">Home Page</a>
+                    <a class="nav-link" href="/api/auth/register">Register</a>
+                    <a class="nav-link nav-btn" href="/api/auth/login">Login</a>
+                </div>
+                
+            </div>
+        </div>
+    </nav>
+{{ end }}
+
+{{ define "nav_bar_authen" }}
     <nav class="navbar navbar-nav fixed-top navbar-expand-lg py-0" id="navbar">
         <div class="container-fluid px-5">
             <a class="navbar-brand" href="/">
@@ -30,8 +56,7 @@
                 <div class="navbar-nav ms-auto d-flex align-items-center">
                     <a class="nav-link" href="/">Home Page</a>
                     <a class="nav-link" href="/api/auth/text-to-image">Amazing Text</a>
-                    <a class="nav-link" href="/api/auth/register">Register</a>
-                    <a class="nav-link nav-btn" href="/api/auth/login">Login</a>
+                    <a class="nav-link nav-btn" href="/api/auth/logout">Logout</a>
                 </div>
                 
             </div>
