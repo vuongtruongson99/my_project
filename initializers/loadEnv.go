@@ -26,6 +26,10 @@ type Config struct {
 	RefreshTokenMaxAge     int           `mapstructure:"REFRESH_TOKEN_MAXAGE"`
 
 	HFAPIToken string `mapstructure:"API_TOKEN"`
+
+	GoogleClientID         string `mapstructure:"GOOGLE_OAUTH_CLIENT_ID"`
+	GoogleClientSecret     string `mapstructure:"GOOGLE_OAUTH_CLIENT_SECRET"`
+	GoogleOauthRedirectURL string `mapstructure:"GOOGLE_OAUTH_REDIRECT_URL"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

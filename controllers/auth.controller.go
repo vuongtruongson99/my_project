@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -33,10 +34,22 @@ func (ac *AuthController) ShowSignUp(c *gin.Context) {
 
 // Show SignIn form
 func (ac *AuthController) ShowSignIn(c *gin.Context) {
+	config, _ := initializers.LoadConfig(".")
+
+	values := url.Values{}
+	values.Add("client_id", config.GoogleClientID)
+	values.Add("redirect_uri", config.GoogleOauthRedirectURL)
+	values.Add("response_type", "code")
+	values.Add("scope", "profile email")
+
+	url := "https://accounts.google.com/o/oauth2/auth?" + values.Encode()
+
 	c.HTML(
 		http.StatusOK,
 		"signin.html",
-		gin.H{},
+		gin.H{
+			"url": url,
+		},
 	)
 }
 
@@ -220,6 +233,7 @@ func (ac *AuthController) LogoutUser(c *gin.Context) {
 	c.SetCookie("access_token", "", -1, "/", "localhost", false, true)
 	c.SetCookie("refresh_token", "", -1, "/", "localhost", false, true)
 	c.SetCookie("logged_id", "", -1, "/", "localhost", false, false)
+	// c.SetCookie("token", "", -1, "/", "localhost", false, true)
 
 	c.HTML(http.StatusOK, "home.html", gin.H{
 		"status": "success",
@@ -259,4 +273,80 @@ func (ac *AuthController) RequestImage(c *gin.Context) {
 		"images": images,
 	})
 
+}
+
+// http://localhost:8080/api/sessions/oauth/google?
+// code=4%2F0AfJohXn-m5hdju_1ngwIGBuP2MtjBMHzWHpRDa-wtyN1CmWZqxflLx0FLBiTrBbzprY0PQ
+// scope=email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid
+// authuser=0
+// prompt=consent
+
+func GoogleOauth(c *gin.Context) {
+	code := c.Query("code")
+
+	var pathUrl string = "/api/auth/text-to-image"
+
+	if c.Query("state") != "" {
+		pathUrl = c.Query("state")
+	}
+
+	if code == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status":  "fail",
+			"message": "Authorization code not provided",
+		})
+		return
+	}
+
+	tokenRes, err := utils.GetGoogleOauthToken(code)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{
+			"status":  "fail",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	google_user, err := utils.GetGoogleUser(tokenRes.Access_token, tokenRes.Id_token)
+
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{
+			"status":  "fail",
+			"message": err.Error(),
+		})
+		return
+	}
+	now := time.Now()
+	email := strings.ToLower(google_user.Email)
+
+	user_data := models.User{
+		Name:      google_user.Name,
+		Email:     email,
+		Password:  "",
+		Photo:     google_user.Picture,
+		Provider:  "Google",
+		Role:      "user",
+		Verified:  true,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+
+	if initializers.DB.Model(&user_data).Where("email = ?", email).Updates(&user_data).RowsAffected == 0 {
+		initializers.DB.Create(&user_data)
+	}
+
+	var user models.User
+	initializers.DB.First(&user, "email = ?", email)
+
+	config, _ := initializers.LoadConfig(".")
+
+	token, err := utils.CreateToken(config.AccessTokenExpiresIn, user.ID, config.AccessTokenPrivateKey)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
+	c.SetCookie("token", token, config.AccessTokenMaxAge*60, "/", "localhost", false, true)
+
+	c.Redirect(http.StatusTemporaryRedirect, fmt.Sprint(config.ClientOrigin, pathUrl))
 }

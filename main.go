@@ -76,6 +76,8 @@ func main() {
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": message})
 	})
 
+	router.GET("/sessions/oauth/google", controllers.GoogleOauth)
+
 	AuthRouteController.AuthRoute(router)
 	UserRouteController.UserRoute(router)
 	PostRouteController.PostRoute(router)
